@@ -3,7 +3,7 @@ import streamlit as st
 from datetime import datetime
 from datetime import timezone
 from datetime import timedelta
-from sayagain.service.llm import sayagain
+from sayagain.service.llm import sayagin_kimi
 
 tz = timezone(
     timedelta(hours=8),
@@ -30,6 +30,11 @@ st.set_page_config(
 )
 # sidebar()
 
+instructions = st.selectbox(
+    "语气风格?",
+    ("阴阳怪气", "喵娘", "更专业", "温柔", "正式", "非正式")
+)
+
 # style = open('moment/style.css').read()
 
 st.markdown(f"""
@@ -37,15 +42,12 @@ st.markdown(f"""
 
 </style>""",unsafe_allow_html=True)
 
-instructions = st.selectbox(
-    "语气风格?",
-    ("阴阳怪气", "喵娘", "更专业")
-)
-
-messages = st.container(height=300)
+input = st.text_input("Say something")
 
 
-if input := st.chat_input("Say something"):
-    messages.chat_message("user").write(input)
-    resp = sayagain(input, instructions)
-    messages.chat_message("assistant").write(f"{resp.content}")
+if input:
+    # messages = st.container(height=500)
+    # messages.chat_message("user").write(input)
+    resp = sayagin_kimi(input, instructions)
+    st.info(resp, icon="🧸")
+    # messages.chat_message("assistant").write(f"{resp}")

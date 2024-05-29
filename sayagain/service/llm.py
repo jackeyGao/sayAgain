@@ -1,8 +1,7 @@
 import os, json
+from openai import OpenAI
 from zhipuai import ZhipuAI
 
-
-client = ZhipuAI(api_key=os.environ["API_KEY"])
 
 prompt = """
 你是一个擅长修改措辞的专家
@@ -29,6 +28,8 @@ prompt = """
 
 
 def sayagain(input: str, instructions: str) -> str:
+    client = ZhipuAI(api_key=os.environ["API_KEY"])
+
     rendered_prompt = prompt.format(
         input=input,
         instructions=instructions
@@ -40,3 +41,27 @@ def sayagain(input: str, instructions: str) -> str:
         ],
     )
     return response.choices[0].message
+
+
+def sayagin_kimi(input: str, instructions: str) -> str:
+    rendered_prompt = prompt.format(
+        input=input,
+        instructions=instructions
+    )
+
+    client = OpenAI(
+        api_key = os.environ["API_KEY"],
+        base_url = "https://api.moonshot.cn/v1",
+    )
+    
+    completion = client.chat.completions.create(
+        model = "moonshot-v1-8k",
+        messages = [
+            {"role": "system", "content": "你是一个擅长修改措辞的专家, 你需要按照下面的语气风格要求重新组织我的语言。"},
+            {"role": "user", "content": rendered_prompt}
+        ],
+        temperature = 0.3,
+    )
+
+    return completion.choices[0].message.content
+ 
